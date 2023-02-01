@@ -98,6 +98,11 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Sets the view to focus on a new user.
+     *
+     * @param user
+     */
     @Override
     public void navigateToUser(User user) {
         Intent intent = new Intent(getContext(), MainActivity.class);

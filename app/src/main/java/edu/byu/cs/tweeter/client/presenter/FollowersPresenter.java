@@ -12,7 +12,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * The presenter for the "following" functionality of the application.
  */
-public class FollowersPresenter implements FollowService.GetFollowersObserver, UserService.GetUserObserver{
+public class FollowersPresenter implements FollowService.GetFollowersObserver, UserService.GetUserObserver {
 
     private static final String LOG_TAG = "FollowersPresenter";
     public static final int PAGE_SIZE = 10;
