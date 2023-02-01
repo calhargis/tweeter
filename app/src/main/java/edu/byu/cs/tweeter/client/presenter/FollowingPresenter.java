@@ -5,13 +5,14 @@ import android.util.Log;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * The presenter for the "following" functionality of the application.
  */
-public class FollowingPresenter implements FollowService.GetFollowingObserver {
+public class FollowingPresenter implements FollowService.GetFollowingObserver, UserService.GetUserObserver {
 
     private static final String LOG_TAG = "FollowingPresenter";
     public static final int PAGE_SIZE = 10;
@@ -31,6 +32,7 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver {
         void setLoading(boolean value);
         void addItems(List<User> newUsers);
         void displayErrorMessage(String message);
+        void navigateToUser(User user);
     }
 
     /**
@@ -108,6 +110,14 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver {
         return new FollowService();
     }
 
+    public void getUser(String username, AuthToken authToken) {
+        getUserService().getUser(username, authToken, this);
+    }
+
+    public UserService getUserService() {
+        return new UserService();
+    }
+
     /**
      * Adds new followees retrieved asynchronously from the service to the view.
      *
@@ -153,5 +163,10 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver {
         view.setLoading(false);
         view.displayErrorMessage(errorMessage);
         setLoading(false);
+    }
+
+    @Override
+    public void handleSuccess(User user) {
+        view.navigateToUser(user);
     }
 }

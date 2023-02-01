@@ -1,10 +1,16 @@
 package edu.byu.cs.tweeter.client.model.service;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTaskUtils;
+import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.GetUserHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.LoginTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.RegisterTaskHandler;
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.RegisterPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -26,6 +32,12 @@ public class UserService {
 
     public interface RegisterObserver {
         void handleSuccess(User user, AuthToken authToken);
+        void handleFailure(String message);
+        void handleException(Exception exception);
+    }
+
+    public interface GetUserObserver {
+        void handleSuccess(User user);
         void handleFailure(String message);
         void handleException(Exception exception);
     }
@@ -65,6 +77,15 @@ public class UserService {
 
     RegisterTask getRegisterTask(String firstname, String lastname, String username, String password, String image, RegisterObserver observer) {
         return new RegisterTask(firstname, lastname, username, password, image, new RegisterTaskHandler(observer));
+    }
+
+    public void getUser(String username, AuthToken authToken, GetUserObserver observer) {
+        GetUserTask getUserTask = getGetUserTask(username, authToken, observer);
+        BackgroundTaskUtils.runTask(getUserTask);
+    }
+
+    GetUserTask getGetUserTask(String username, AuthToken authToken, GetUserObserver observer) {
+        return new GetUserTask(authToken, username, new GetUserHandler(observer));
     }
 
 }

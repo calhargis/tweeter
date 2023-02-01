@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.view.main.following;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,6 +26,7 @@ import java.util.List;
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
+import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -92,6 +94,13 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
     }
 
     @Override
+    public void navigateToUser(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_following, container, false);
@@ -142,7 +151,8 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(getContext(), "You selected '" + userName.getText() + "'. NOTE: THIS SAMPLE CODE IS A SUBSET OF THE PROJECT FUNCTIONALITY SO THERE'S NOWHERE FOR THIS CLICK TO GO. YOU WILL NEED TO NAVIGATE TO THE CLICKED USER IN YOUR PROJECT.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Getting user's profile...", Toast.LENGTH_LONG).show();
+                        presenter.getUser(userAlias.getText().toString(), Cache.getInstance().getCurrUserAuthToken());
                     }
                 });
             } else {
