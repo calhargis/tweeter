@@ -45,17 +45,28 @@ public class LoginPresenter implements UserService.LoginObserver {
         this.view = view;
     }
 
-    /**
-     * Initiates the login process.
-     *
-     * @param username the user's username.
-     * @param password the user's password.
-     */
+//    /**
+//     * Initiates the login process.
+//     *
+//     * @param username the user's username.
+//     * @param password the user's password.
+//     */
+//    public void initiateLogin(String username, String password) {
+//        String validationString = validateLogin(username, password);
+//        if (validationString == null) {
+//            UserService userService = new UserService();
+//            userService.login(username, password, this);
+//        }
+//    }
+
     public void initiateLogin(String username, String password) {
-        String validationString = validateLogin(username, password);
-        if (validationString == null) {
-            UserService userService = new UserService();
-            userService.login(username, password, this);
+        String validateError = validateLogin(username, password);
+        if (validateError == null) {
+            view.clearErrorMessages();
+            view.displayInfoMessage("Logging In...");
+            new UserService().login(username, password, this);
+        } else {
+            view.displayInfoMessage(validateError);
         }
     }
 
@@ -104,7 +115,7 @@ public class LoginPresenter implements UserService.LoginObserver {
 //        String errorMessage = "Failed to login because of exception: " + exception.getMessage();
 //        Log.e(LOG_TAG, errorMessage, exception);
 //        view.loginUnsuccessful(errorMessage);
-        view.displayInfoMessage("Failed to login because of exception: " + exception.getMessage());
+        view.displayErrorMessage("Failed to login because of exception: " + exception.getMessage());
     }
 
     /**

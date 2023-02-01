@@ -2,7 +2,10 @@ package edu.byu.cs.tweeter.client.model.service;
 
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTaskUtils;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
+import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.LoginTaskHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.RegisterTaskHandler;
+import edu.byu.cs.tweeter.client.presenter.RegisterPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -16,6 +19,12 @@ public class UserService {
      * asynchronous operations complete.
      */
     public interface LoginObserver {
+        void handleSuccess(User user, AuthToken authToken);
+        void handleFailure(String message);
+        void handleException(Exception exception);
+    }
+
+    public interface RegisterObserver {
         void handleSuccess(User user, AuthToken authToken);
         void handleFailure(String message);
         void handleException(Exception exception);
@@ -49,6 +58,13 @@ public class UserService {
         return new LoginTask(username, password, new LoginTaskHandler(observer));
     }
 
+    public void register(String firstname, String lastname, String username, String password, String image, RegisterObserver observer) {
+        RegisterTask registerTask = getRegisterTask(firstname, lastname, username, password, image, observer);
+        BackgroundTaskUtils.runTask(registerTask);
+    }
 
+    RegisterTask getRegisterTask(String firstname, String lastname, String username, String password, String image, RegisterObserver observer) {
+        return new RegisterTask(firstname, lastname, username, password, image, new RegisterTaskHandler(observer));
+    }
 
 }
