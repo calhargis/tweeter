@@ -27,9 +27,6 @@ public class GetFeedTaskHandler extends Handler {
 
     @Override
     public void handleMessage(@NonNull Message msg) {
-//        isLoading = false;
-//        removeLoadingFooter();
-
         boolean success = msg.getData().getBoolean(GetFeedTask.SUCCESS_KEY);
         if (success) {
             List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.STATUSES_KEY);
