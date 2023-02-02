@@ -3,8 +3,12 @@ package edu.byu.cs.tweeter.client.model.service;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTaskUtils;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersCountHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingCountHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersTaskHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -31,6 +35,17 @@ public class FollowService {
      */
     public interface GetFollowersObserver {
         void handleSuccess(List<User> followers, boolean hasMorePages);
+        void handleFailure(String message);
+        void handleException(Exception exception);
+    }
+
+    /**
+     * An observer interface to be implemented by observers who want to be notified when
+     * asynchronous operations complete.
+     */
+    public interface GetFollowCountObserver {
+        void handleFollowingCountSuccess(int count);
+        void handleFollowerCountSuccess(int count);
         void handleFailure(String message);
         void handleException(Exception exception);
     }
@@ -94,5 +109,23 @@ public class FollowService {
     // This method is public so it can be accessed by test cases
     public GetFollowersTask getGetFollowersTask(AuthToken authToken, User targetUser, int limit, User lastFollower, GetFollowersObserver observer) {
         return new GetFollowersTask(authToken, targetUser, limit, lastFollower, new GetFollowersTaskHandler(observer));
+    }
+
+    public void getFollowersCount(AuthToken authToken, User targetUser, GetFollowCountObserver observer) {
+        GetFollowersCountTask task = getGetFollowersCountTask(authToken, targetUser, observer);
+        BackgroundTaskUtils.runTask(task);
+    }
+
+    public GetFollowersCountTask getGetFollowersCountTask(AuthToken authToken, User targetUser, GetFollowCountObserver observer) {
+        return new GetFollowersCountTask(authToken, targetUser, new GetFollowersCountHandler(observer));
+    }
+
+    public void getFollowingCount(AuthToken authToken, User user, GetFollowCountObserver observer) {
+        GetFollowingCountTask task = getGetFollowingCountTask(authToken, user, observer);
+        BackgroundTaskUtils.runTask(task);
+    }
+
+    public GetFollowingCountTask getGetFollowingCountTask(AuthToken authToken, User user, GetFollowCountObserver observer) {
+        return new GetFollowingCountTask(authToken, user, new GetFollowingCountHandler(observer));
     }
 }

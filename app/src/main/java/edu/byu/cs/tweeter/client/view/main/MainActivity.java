@@ -180,6 +180,16 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     }
 
     @Override
+    public void updateFollowerCount(int count) {
+        followerCount.setText(getString(R.string.followerCount, String.valueOf(count)));
+    }
+
+    @Override
+    public void updateFollowingCount(int count) {
+        followeeCount.setText(getString(R.string.followeeCount, String.valueOf(count)));
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
@@ -284,14 +294,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
         // Get count of most recently selected user's followers.
-        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(),
-                selectedUser, new GetFollowersCountHandler());
-        executor.execute(followersCountTask);
+        presenter.getFollowersCount(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
+
 
         // Get count of most recently selected user's followees (who they are following)
-        GetFollowingCountTask followingCountTask = new GetFollowingCountTask(Cache.getInstance().getCurrUserAuthToken(),
-                selectedUser, new GetFollowingCountHandler());
-        executor.execute(followingCountTask);
+        presenter.getFollowingCount(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
     }
 
     public void updateFollowButton(boolean removed) {
@@ -312,51 +319,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     // GetFollowersCountHandler
 
-    private class GetFollowersCountHandler extends Handler {
 
-        public GetFollowersCountHandler() {
-            super(Looper.getMainLooper());
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(GetFollowersCountTask.SUCCESS_KEY);
-            if (success) {
-                int count = msg.getData().getInt(GetFollowersCountTask.COUNT_KEY);
-                followerCount.setText(getString(R.string.followerCount, String.valueOf(count)));
-            } else if (msg.getData().containsKey(GetFollowersCountTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetFollowersCountTask.MESSAGE_KEY);
-                Toast.makeText(MainActivity.this, "Failed to get followers count: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(GetFollowersCountTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(GetFollowersCountTask.EXCEPTION_KEY);
-                Toast.makeText(MainActivity.this, "Failed to get followers count because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 
     // GetFollowingCountHandler
 
-    private class GetFollowingCountHandler extends Handler {
 
-        public GetFollowingCountHandler() {
-            super(Looper.getMainLooper());
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(GetFollowingCountTask.SUCCESS_KEY);
-            if (success) {
-                int count = msg.getData().getInt(GetFollowingCountTask.COUNT_KEY);
-                followeeCount.setText(getString(R.string.followeeCount, String.valueOf(count)));
-            } else if (msg.getData().containsKey(GetFollowingCountTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetFollowingCountTask.MESSAGE_KEY);
-                Toast.makeText(MainActivity.this, "Failed to get following count: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(GetFollowingCountTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(GetFollowingCountTask.EXCEPTION_KEY);
-                Toast.makeText(MainActivity.this, "Failed to get following count because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 
     // IsFollowerHandler
 
