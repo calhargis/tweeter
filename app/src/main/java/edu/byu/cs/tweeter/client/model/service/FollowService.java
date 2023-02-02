@@ -10,12 +10,14 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
+import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.FollowHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersCountHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingCountHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.IsFollowerHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.UnfollowHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -71,6 +73,16 @@ public class FollowService {
      */
     public interface FollowObserver {
         void handleFollowSuccess(boolean isFollower);
+        void handleFailure(String message);
+        void handleException(Exception exception);
+    }
+
+    /**
+     * An observer interface to be implemented by observers who want to be notified when
+     * asynchronous operations complete.
+     */
+    public interface UnfollowObserver {
+        void handleUnfollowSuccess(boolean success);
         void handleFailure(String message);
         void handleException(Exception exception);
     }
@@ -170,5 +182,14 @@ public class FollowService {
 
     public FollowTask getFollowTask(AuthToken authToken, User user, FollowObserver observer) {
         return new FollowTask(authToken, user, new FollowHandler(observer));
+    }
+
+    public void unfollow(AuthToken authToken, User user, UnfollowObserver observer) {
+        UnfollowTask task = getUnfollowTask(authToken, user, observer);
+        BackgroundTaskUtils.runTask(task);
+    }
+
+    public UnfollowTask getUnfollowTask(AuthToken authToken, User user, UnfollowObserver observer) {
+        return new UnfollowTask(authToken, user, new UnfollowHandler(observer));
     }
 }

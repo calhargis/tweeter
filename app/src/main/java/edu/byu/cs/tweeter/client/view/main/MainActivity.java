@@ -130,15 +130,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                 followButton.setEnabled(false);
 
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
-                    UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
-                            selectedUser, new UnfollowHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(unfollowTask);
-
+                    presenter.unfollow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
                     Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                     presenter.follow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
+                    Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -199,6 +195,16 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         if (success) {
             updateSelectedUserFollowingAndFollowers();
             updateFollowButton(false);
+        } else {
+            followButton.setEnabled(true);
+        }
+    }
+
+    @Override
+    public void updateUnfollow(boolean success) {
+        if (success) {
+            updateSelectedUserFollowingAndFollowers();
+            updateFollowButton(true);
         } else {
             followButton.setEnabled(true);
         }
@@ -350,29 +356,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     // UnfollowHandler
 
-    private class UnfollowHandler extends Handler {
 
-        public UnfollowHandler() {
-            super(Looper.getMainLooper());
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(UnfollowTask.SUCCESS_KEY);
-            if (success) {
-                updateSelectedUserFollowingAndFollowers();
-                updateFollowButton(true);
-            } else if (msg.getData().containsKey(UnfollowTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(UnfollowTask.MESSAGE_KEY);
-                Toast.makeText(MainActivity.this, "Failed to unfollow: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(UnfollowTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(UnfollowTask.EXCEPTION_KEY);
-                Toast.makeText(MainActivity.this, "Failed to unfollow because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-
-            followButton.setEnabled(true);
-        }
-    }
 
     // PostStatusHandler
 
