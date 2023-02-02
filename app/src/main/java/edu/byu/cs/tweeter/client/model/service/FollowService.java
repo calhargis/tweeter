@@ -1,16 +1,19 @@
 package edu.byu.cs.tweeter.client.model.service;
 
 import java.util.List;
+import java.util.Observable;
 
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTaskUtils;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersCountHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingCountHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersTaskHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.IsFollowerHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -46,6 +49,16 @@ public class FollowService {
     public interface GetFollowCountObserver {
         void handleFollowingCountSuccess(int count);
         void handleFollowerCountSuccess(int count);
+        void handleFailure(String message);
+        void handleException(Exception exception);
+    }
+
+    /**
+     * An observer interface to be implemented by observers who want to be notified when
+     * asynchronous operations complete.
+     */
+    public interface IsFollowerObserver {
+        void isFollowerSuccess(boolean isFollower);
         void handleFailure(String message);
         void handleException(Exception exception);
     }
@@ -127,5 +140,14 @@ public class FollowService {
 
     public GetFollowingCountTask getGetFollowingCountTask(AuthToken authToken, User user, GetFollowCountObserver observer) {
         return new GetFollowingCountTask(authToken, user, new GetFollowingCountHandler(observer));
+    }
+
+    public void isFollower(AuthToken authToken, User follower, User followee, IsFollowerObserver observer) {
+        IsFollowerTask task = getIsFollowerTask(authToken, follower, followee, observer);
+        BackgroundTaskUtils.runTask(task);
+    }
+
+    public IsFollowerTask getIsFollowerTask(AuthToken authToken, User follower, User followee, IsFollowerObserver observer) {
+        return new IsFollowerTask(authToken, follower, followee, new IsFollowerHandler(observer));
     }
 }
