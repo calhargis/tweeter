@@ -5,8 +5,10 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTaskUtils;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
+import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFeedTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetStoryTaskHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.PostStatusHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -29,6 +31,16 @@ public class StatusService {
      */
     public interface GetStoryObserver {
         void handleSuccess(List<Status> statuses, boolean hasMorePages);
+        void handleFailure(String message);
+        void handleException(Exception exception);
+    }
+
+    /**
+     * An observer interface to be implemented by observers who want to be notified when
+     * asynchronous operations complete.
+     */
+    public interface PostStatusObserver {
+        void handlePostStatusSuccess(boolean success);
         void handleFailure(String message);
         void handleException(Exception exception);
     }
@@ -87,6 +99,15 @@ public class StatusService {
     // This method is public so it can be accessed by test cases
     public GetStoryTask getGetStoryTask(AuthToken authToken, User targetUser, int limit, Status lastStatus, StatusService.GetStoryObserver observer) {
         return new GetStoryTask(authToken, targetUser, limit, lastStatus, new GetStoryTaskHandler(observer));
+    }
+
+    public void postStatus(AuthToken authToken, Status status, PostStatusObserver observer) {
+        PostStatusTask task = getPostStatusTask(authToken, status, observer);
+        BackgroundTaskUtils.runTask(task);
+    }
+
+    public PostStatusTask getPostStatusTask(AuthToken authToken, Status status, PostStatusObserver observer) {
+        return new PostStatusTask(authToken, status, new PostStatusHandler(observer));
     }
 
 }
