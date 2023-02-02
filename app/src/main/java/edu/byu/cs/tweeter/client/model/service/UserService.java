@@ -6,9 +6,11 @@ import java.util.concurrent.Executors;
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTaskUtils;
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
+import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetUserHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.LoginTaskHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.LogoutTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.RegisterTaskHandler;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.RegisterPresenter;
@@ -38,6 +40,12 @@ public class UserService {
 
     public interface GetUserObserver {
         void handleSuccess(User user);
+        void handleFailure(String message);
+        void handleException(Exception exception);
+    }
+
+    public interface LogoutObserver {
+        void handleLogoutSuccess();
         void handleFailure(String message);
         void handleException(Exception exception);
     }
@@ -86,6 +94,15 @@ public class UserService {
 
     GetUserTask getGetUserTask(String username, AuthToken authToken, GetUserObserver observer) {
         return new GetUserTask(authToken, username, new GetUserHandler(observer));
+    }
+
+    public void logout(AuthToken authToken, LogoutObserver observer) {
+        LogoutTask logoutTask = getLogoutTask(authToken, observer);
+        BackgroundTaskUtils.runTask(logoutTask);
+    }
+
+    LogoutTask getLogoutTask(AuthToken authToken, LogoutObserver observer) {
+        return new LogoutTask(authToken, new LogoutTaskHandler(observer));
     }
 
 }
