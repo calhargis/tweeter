@@ -5,7 +5,8 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements UserService.LogoutObserver, FollowService.GetFollowCountObserver, FollowService.IsFollowerObserver {
+public class MainPresenter implements UserService.LogoutObserver, FollowService.GetFollowCountObserver,
+        FollowService.IsFollowerObserver, FollowService.FollowObserver {
 
     private static final String LOG_TAG = "MainPresenter";
 
@@ -23,6 +24,7 @@ public class MainPresenter implements UserService.LogoutObserver, FollowService.
         void updateFollowerCount(int count);
         void updateFollowingCount(int count);
         void updateIsFollower(boolean isFollower);
+        void updateFollow(boolean success);
     }
 
     /**
@@ -57,6 +59,10 @@ public class MainPresenter implements UserService.LogoutObserver, FollowService.
         new FollowService().isFollower(authToken, follower, followee, this);
     }
 
+    public void follow(AuthToken authToken, User user) {
+        new FollowService().follow(authToken, user, this);
+    }
+
     @Override
     public void handleLogoutSuccess() {
         view.logoutUser();
@@ -85,5 +91,10 @@ public class MainPresenter implements UserService.LogoutObserver, FollowService.
     @Override
     public void isFollowerSuccess(boolean isFollower) {
         view.updateIsFollower(isFollower);
+    }
+
+    @Override
+    public void handleFollowSuccess(boolean success) {
+        view.updateFollow(success);
     }
 }

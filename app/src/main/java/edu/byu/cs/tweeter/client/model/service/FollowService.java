@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Observable;
 
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTaskUtils;
+import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.FollowHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersCountHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingCountHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingTaskHandler;
@@ -59,6 +61,16 @@ public class FollowService {
      */
     public interface IsFollowerObserver {
         void isFollowerSuccess(boolean isFollower);
+        void handleFailure(String message);
+        void handleException(Exception exception);
+    }
+
+    /**
+     * An observer interface to be implemented by observers who want to be notified when
+     * asynchronous operations complete.
+     */
+    public interface FollowObserver {
+        void handleFollowSuccess(boolean isFollower);
         void handleFailure(String message);
         void handleException(Exception exception);
     }
@@ -149,5 +161,14 @@ public class FollowService {
 
     public IsFollowerTask getIsFollowerTask(AuthToken authToken, User follower, User followee, IsFollowerObserver observer) {
         return new IsFollowerTask(authToken, follower, followee, new IsFollowerHandler(observer));
+    }
+
+    public void follow(AuthToken authToken, User user, FollowObserver observer) {
+        FollowTask task = getFollowTask(authToken, user, observer);
+        BackgroundTaskUtils.runTask(task);
+    }
+
+    public FollowTask getFollowTask(AuthToken authToken, User user, FollowObserver observer) {
+        return new FollowTask(authToken, user, new FollowHandler(observer));
     }
 }
