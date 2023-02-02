@@ -19,11 +19,6 @@ public class LoginPresenter implements UserService.LoginObserver {
     /**
      * The interface by which this presenter communicates with it's view.
      */
-//    public interface View {
-//        void loginSuccessful(User user, AuthToken authToken);
-//        void loginUnsuccessful(String message);
-//    }
-
     public interface View {
         void displayErrorMessage(String message);
         void clearErrorMessages();
@@ -45,20 +40,6 @@ public class LoginPresenter implements UserService.LoginObserver {
         this.view = view;
     }
 
-//    /**
-//     * Initiates the login process.
-//     *
-//     * @param username the user's username.
-//     * @param password the user's password.
-//     */
-//    public void initiateLogin(String username, String password) {
-//        String validationString = validateLogin(username, password);
-//        if (validationString == null) {
-//            UserService userService = new UserService();
-//            userService.login(username, password, this);
-//        }
-//    }
-
     public void initiateLogin(String username, String password) {
         String validateError = validateLogin(username, password);
         if (validateError == null) {
@@ -79,11 +60,6 @@ public class LoginPresenter implements UserService.LoginObserver {
      */
     @Override
     public void handleSuccess(User user, AuthToken authToken) {
-//        // Cache user session information
-//        Cache.getInstance().setCurrUser(user);
-//        Cache.getInstance().setCurrUserAuthToken(authToken);
-//
-//        view.loginSuccessful(user, authToken);
         view.clearInfoMessages();
         view.clearErrorMessages();
         view.displayInfoMessage("Hello " + Cache.getInstance().getCurrUser().getName());
@@ -98,9 +74,6 @@ public class LoginPresenter implements UserService.LoginObserver {
      */
     @Override
     public void handleFailure(String message) {
-//        String errorMessage = "Failed to login: " + message;
-//        Log.e(LOG_TAG, errorMessage);
-//        view.loginUnsuccessful(errorMessage);
         view.displayInfoMessage("Failed to login: " + message);
     }
 
@@ -112,9 +85,6 @@ public class LoginPresenter implements UserService.LoginObserver {
      */
     @Override
     public void handleException(Exception exception) {
-//        String errorMessage = "Failed to login because of exception: " + exception.getMessage();
-//        Log.e(LOG_TAG, errorMessage, exception);
-//        view.loginUnsuccessful(errorMessage);
         view.displayErrorMessage("Failed to login because of exception: " + exception.getMessage());
     }
 

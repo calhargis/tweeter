@@ -9,6 +9,10 @@ import androidx.annotation.NonNull;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 
+/**
+ * Handles messages from the background task indicating that the task is done, by invoking
+ * methods on the observer.
+ */
 public class GetFollowersCountHandler extends Handler{
 
     FollowService.GetFollowCountObserver observer;
@@ -23,15 +27,12 @@ public class GetFollowersCountHandler extends Handler{
         if (success) {
             int count = msg.getData().getInt(GetFollowersCountTask.COUNT_KEY);
             observer.handleFollowerCountSuccess(count);
-//            followerCount.setText(getString(R.string.followerCount, String.valueOf(count)));
         } else if (msg.getData().containsKey(GetFollowersCountTask.MESSAGE_KEY)) {
             String message = msg.getData().getString(GetFollowersCountTask.MESSAGE_KEY);
             observer.handleFailure(message);
-//            Toast.makeText(MainActivity.this, "Failed to get followers count: " + message, Toast.LENGTH_LONG).show();
         } else if (msg.getData().containsKey(GetFollowersCountTask.EXCEPTION_KEY)) {
             Exception ex = (Exception) msg.getData().getSerializable(GetFollowersCountTask.EXCEPTION_KEY);
             observer.handleException(ex);
-//            Toast.makeText(MainActivity.this, "Failed to get followers count because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }

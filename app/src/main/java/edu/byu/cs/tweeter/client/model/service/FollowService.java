@@ -148,47 +148,108 @@ public class FollowService {
         return new GetFollowersTask(authToken, targetUser, limit, lastFollower, new GetFollowersTaskHandler(observer));
     }
 
+    /**
+     *
+     * @param authToken the session auth token.
+     * @param targetUser the user for whom followers are being counted.
+     */
     public void getFollowersCount(AuthToken authToken, User targetUser, GetFollowCountObserver observer) {
         GetFollowersCountTask task = getGetFollowersCountTask(authToken, targetUser, observer);
         BackgroundTaskUtils.runTask(task);
     }
 
+    /**
+     * Returns an instance of {@link GetFollowersCountTask}. Allows mocking of the
+     * GetFollowersCountTask class for testing purposes. All usages of GetFollowersCountTask
+     * should get their instance from this method to allow for proper mocking.
+     *
+     * @return the instance.
+     */
     public GetFollowersCountTask getGetFollowersCountTask(AuthToken authToken, User targetUser, GetFollowCountObserver observer) {
         return new GetFollowersCountTask(authToken, targetUser, new GetFollowersCountHandler(observer));
     }
 
+    /**
+     *
+     * @param authToken the session auth token.
+     * @param user the user for whom followees are being counted.
+     */
     public void getFollowingCount(AuthToken authToken, User user, GetFollowCountObserver observer) {
         GetFollowingCountTask task = getGetFollowingCountTask(authToken, user, observer);
         BackgroundTaskUtils.runTask(task);
     }
 
+    /**
+     * Returns an instance of {@link GetFollowingCountTask}. Allows mocking of the
+     * GetFollowingCountTask class for testing purposes. All usages of GetFollowingCountTask
+     * should get their instance from this method to allow for proper mocking.
+     *
+     * @return the instance.
+     */
     public GetFollowingCountTask getGetFollowingCountTask(AuthToken authToken, User user, GetFollowCountObserver observer) {
         return new GetFollowingCountTask(authToken, user, new GetFollowingCountHandler(observer));
     }
 
+    /**
+     *
+     * @param authToken the session auth token.
+     * @param follower follower to check
+     * @param followee followee to check
+     */
     public void isFollower(AuthToken authToken, User follower, User followee, IsFollowerObserver observer) {
         IsFollowerTask task = getIsFollowerTask(authToken, follower, followee, observer);
         BackgroundTaskUtils.runTask(task);
     }
 
+    /**
+     * Returns an instance of {@link IsFollowerTask}. Allows mocking of the
+     * IsFollowerTask class for testing purposes. All usages of IsFollowerTask
+     * should get their instance from this method to allow for proper mocking.
+     *
+     * @return the instance.
+     */
     public IsFollowerTask getIsFollowerTask(AuthToken authToken, User follower, User followee, IsFollowerObserver observer) {
         return new IsFollowerTask(authToken, follower, followee, new IsFollowerHandler(observer));
     }
 
+    /**
+     *
+     * @param authToken the session auth token.
+     * @param user the user to follow
+     */
     public void follow(AuthToken authToken, User user, FollowObserver observer) {
         FollowTask task = getFollowTask(authToken, user, observer);
         BackgroundTaskUtils.runTask(task);
     }
 
+    /**
+     * Returns an instance of {@link FollowTask}. Allows mocking of the
+     * FollowTask class for testing purposes. All usages of FollowTask
+     * should get their instance from this method to allow for proper mocking.
+     *
+     * @return the instance.
+     */
     public FollowTask getFollowTask(AuthToken authToken, User user, FollowObserver observer) {
         return new FollowTask(authToken, user, new FollowHandler(observer));
     }
 
+    /**
+     *
+     * @param authToken the session auth token.
+     * @param user the user to unfollow
+     */
     public void unfollow(AuthToken authToken, User user, UnfollowObserver observer) {
         UnfollowTask task = getUnfollowTask(authToken, user, observer);
         BackgroundTaskUtils.runTask(task);
     }
 
+    /**
+     * Returns an instance of {@link UnfollowTask}. Allows mocking of the
+     * UnfollowTask class for testing purposes. All usages of UnfollowTask
+     * should get their instance from this method to allow for proper mocking.
+     *
+     * @return the instance.
+     */
     public UnfollowTask getUnfollowTask(AuthToken authToken, User user, UnfollowObserver observer) {
         return new UnfollowTask(authToken, user, new UnfollowHandler(observer));
     }

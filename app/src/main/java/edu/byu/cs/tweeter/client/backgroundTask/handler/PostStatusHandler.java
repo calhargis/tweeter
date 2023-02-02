@@ -9,6 +9,10 @@ import androidx.annotation.NonNull;
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 
+/**
+ * Handles messages from the background task indicating that the task is done, by invoking
+ * methods on the observer.
+ */
 public class PostStatusHandler extends Handler {
 
     StatusService.PostStatusObserver observer;
@@ -23,7 +27,7 @@ public class PostStatusHandler extends Handler {
         if (success) {
             observer.handlePostStatusSuccess(success);
         } else if (msg.getData().containsKey(PostStatusTask.MESSAGE_KEY)) {
-            String message = "Failed to post status: " + msg.getData().getString(PostStatusTask.MESSAGE_KEY);
+            String message = msg.getData().getString(PostStatusTask.MESSAGE_KEY);
             observer.handleFailure(message);
         } else if (msg.getData().containsKey(PostStatusTask.EXCEPTION_KEY)) {
             Exception ex = (Exception) msg.getData().getSerializable(PostStatusTask.EXCEPTION_KEY);

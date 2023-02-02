@@ -11,6 +11,10 @@ import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 
+/**
+ * Handles messages from the background task indicating that the task is done, by invoking
+ * methods on the observer.
+ */
 public class FollowHandler extends Handler {
 
     FollowService.FollowObserver observer;

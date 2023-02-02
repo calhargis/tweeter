@@ -11,6 +11,10 @@ import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 
+/**
+ * Handles messages from the background task indicating that the task is done, by invoking
+ * methods on the observer.
+ */
 public class LogoutTaskHandler extends Handler {
 
     UserService.LogoutObserver observer;

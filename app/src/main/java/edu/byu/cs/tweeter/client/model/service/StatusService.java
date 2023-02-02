@@ -90,22 +90,33 @@ public class StatusService {
     }
 
     /**
-     * Returns an instance of {@link GetFeedTask}. Allows mocking of the
-     * GetFollowingTask class for testing purposes. All usages of GetFollowingTask
+     * Returns an instance of {@link GetStoryTask}. Allows mocking of the
+     * GetStoryTask class for testing purposes. All usages of GetStoryTask
      * should get their instance from this method to allow for proper mocking.
      *
      * @return the instance.
      */
-    // This method is public so it can be accessed by test cases
     public GetStoryTask getGetStoryTask(AuthToken authToken, User targetUser, int limit, Status lastStatus, StatusService.GetStoryObserver observer) {
         return new GetStoryTask(authToken, targetUser, limit, lastStatus, new GetStoryTaskHandler(observer));
     }
 
+    /**
+     *
+     * @param authToken the session auth token.
+     * @param status the status to post
+     */
     public void postStatus(AuthToken authToken, Status status, PostStatusObserver observer) {
         PostStatusTask task = getPostStatusTask(authToken, status, observer);
         BackgroundTaskUtils.runTask(task);
     }
 
+    /**
+     * Returns an instance of {@link PostStatusTask}. Allows mocking of the
+     * PostStatusTask class for testing purposes. All usages of PostStatusTask
+     * should get their instance from this method to allow for proper mocking.
+     *
+     * @return the instance.
+     */
     public PostStatusTask getPostStatusTask(AuthToken authToken, Status status, PostStatusObserver observer) {
         return new PostStatusTask(authToken, status, new PostStatusHandler(observer));
     }

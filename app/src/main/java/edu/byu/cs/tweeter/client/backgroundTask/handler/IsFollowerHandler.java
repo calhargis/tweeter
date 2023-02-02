@@ -12,6 +12,10 @@ import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 
+/**
+ * Handles messages from the background task indicating that the task is done, by invoking
+ * methods on the observer.
+ */
 public class IsFollowerHandler extends Handler {
 
     FollowService.IsFollowerObserver observer;
@@ -28,7 +32,7 @@ public class IsFollowerHandler extends Handler {
             boolean isFollower = msg.getData().getBoolean(IsFollowerTask.IS_FOLLOWER_KEY);
             observer.isFollowerSuccess(isFollower);
         } else if (msg.getData().containsKey(IsFollowerTask.MESSAGE_KEY)) {
-            String message = "Failed to determine following relationship: " + msg.getData().getString(IsFollowerTask.MESSAGE_KEY);
+            String message = msg.getData().getString(IsFollowerTask.MESSAGE_KEY);
             observer.handleFailure(message);
         } else if (msg.getData().containsKey(IsFollowerTask.EXCEPTION_KEY)) {
             Exception ex = (Exception) msg.getData().getSerializable(IsFollowerTask.EXCEPTION_KEY);

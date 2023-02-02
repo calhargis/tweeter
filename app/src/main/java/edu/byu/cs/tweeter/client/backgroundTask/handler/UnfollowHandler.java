@@ -11,6 +11,10 @@ import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 
+/**
+ * Handles messages from the background task indicating that the task is done, by invoking
+ * methods on the observer.
+ */
 public class UnfollowHandler extends Handler {
 
     FollowService.UnfollowObserver observer;
@@ -26,7 +30,7 @@ public class UnfollowHandler extends Handler {
         if (success) {
             observer.handleUnfollowSuccess(success);
         } else if (msg.getData().containsKey(UnfollowTask.MESSAGE_KEY)) {
-            String message = "Failed to unfollow: " + msg.getData().getString(UnfollowTask.MESSAGE_KEY);
+            String message = msg.getData().getString(UnfollowTask.MESSAGE_KEY);
             observer.handleFailure(message);
         } else if (msg.getData().containsKey(UnfollowTask.EXCEPTION_KEY)) {
             Exception ex = (Exception) msg.getData().getSerializable(UnfollowTask.EXCEPTION_KEY);

@@ -32,18 +32,30 @@ public class UserService {
         void handleException(Exception exception);
     }
 
+    /**
+     * An observer interface to be implemented by observers who want to be notified when
+     * asynchronous operations complete.
+     */
     public interface RegisterObserver {
         void handleSuccess(User user, AuthToken authToken);
         void handleFailure(String message);
         void handleException(Exception exception);
     }
 
+    /**
+     * An observer interface to be implemented by observers who want to be notified when
+     * asynchronous operations complete.
+     */
     public interface GetUserObserver {
         void handleSuccess(User user);
         void handleFailure(String message);
         void handleException(Exception exception);
     }
 
+    /**
+     * An observer interface to be implemented by observers who want to be notified when
+     * asynchronous operations complete.
+     */
     public interface LogoutObserver {
         void handleLogoutSuccess();
         void handleFailure(String message);
@@ -78,29 +90,67 @@ public class UserService {
         return new LoginTask(username, password, new LoginTaskHandler(observer));
     }
 
+    /**
+     *
+     * @param firstname the user's first name
+     * @param lastname the user's last name
+     * @param username the alias of the user
+     * @param password the password for the user
+     * @param image the user's profile picture
+     */
     public void register(String firstname, String lastname, String username, String password, String image, RegisterObserver observer) {
         RegisterTask registerTask = getRegisterTask(firstname, lastname, username, password, image, observer);
         BackgroundTaskUtils.runTask(registerTask);
     }
 
+    /**
+     * Returns an instance of {@link RegisterTask}. Allows mocking of the RegisterTask class for
+     * testing purposes. All usages of RegisterTask should get their instance from this method to
+     * allow for proper mocking.
+     *
+     * @return the instance.
+     */
     RegisterTask getRegisterTask(String firstname, String lastname, String username, String password, String image, RegisterObserver observer) {
         return new RegisterTask(firstname, lastname, username, password, image, new RegisterTaskHandler(observer));
     }
 
+    /**
+     *
+     * @param username the username of the user
+     * @param authToken the session auth token
+     */
     public void getUser(String username, AuthToken authToken, GetUserObserver observer) {
         GetUserTask getUserTask = getGetUserTask(username, authToken, observer);
         BackgroundTaskUtils.runTask(getUserTask);
     }
 
+    /**
+     * Returns an instance of {@link GetUserTask}. Allows mocking of the GetUserTask class for
+     * testing purposes. All usages of GetUserTask should get their instance from this method to
+     * allow for proper mocking.
+     *
+     * @return the instance.
+     */
     GetUserTask getGetUserTask(String username, AuthToken authToken, GetUserObserver observer) {
         return new GetUserTask(authToken, username, new GetUserHandler(observer));
     }
 
+    /**
+     *
+     * @param authToken the session auth token
+     */
     public void logout(AuthToken authToken, LogoutObserver observer) {
         LogoutTask logoutTask = getLogoutTask(authToken, observer);
         BackgroundTaskUtils.runTask(logoutTask);
     }
 
+    /**
+     * Returns an instance of {@link LogoutTask}. Allows mocking of the LogoutTask class for
+     * testing purposes. All usages of LogoutTask should get their instance from this method to
+     * allow for proper mocking.
+     *
+     * @return the instance.
+     */
     LogoutTask getLogoutTask(AuthToken authToken, LogoutObserver observer) {
         return new LogoutTask(authToken, new LogoutTaskHandler(observer));
     }

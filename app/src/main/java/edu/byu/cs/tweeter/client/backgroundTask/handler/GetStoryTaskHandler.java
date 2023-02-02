@@ -13,7 +13,8 @@ import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.model.domain.Status;
 
 /**
- * Message handler (i.e., observer) for GetFeedTask.
+ * Handles messages from the background task indicating that the task is done, by invoking
+ * methods on the observer.
  */
 public class GetStoryTaskHandler extends Handler {
 

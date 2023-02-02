@@ -14,7 +14,8 @@ import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
- * Message handler (i.e., observer) for GetUserTask.
+ * Handles messages from the background task indicating that the task is done, by invoking
+ * methods on the observer.
  */
 public class GetUserHandler extends Handler {
 

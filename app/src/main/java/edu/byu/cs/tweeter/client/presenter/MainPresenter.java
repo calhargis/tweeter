@@ -87,14 +87,26 @@ public class MainPresenter implements UserService.LogoutObserver, FollowService.
         view.logoutUser();
     }
 
+    /**
+     * Invoked when the login request completes if the login request was unsuccessful. Notifies the
+     * view of the unsuccessful login.
+     *
+     * @param message error message.
+     */
     @Override
     public void handleFailure(String message) {
-        view.displayErrorMessage(message);
+        view.displayInfoMessage("Failed: " + message);
     }
 
+    /**
+     * A callback indicating that an exception occurred in an asynchronous method this class is
+     * observing.
+     *
+     * @param exception the exception.
+     */
     @Override
     public void handleException(Exception exception) {
-        view.displayErrorMessage(exception.getMessage());
+        view.displayErrorMessage("Failed because of exception: " + exception.getMessage());
     }
 
     @Override
