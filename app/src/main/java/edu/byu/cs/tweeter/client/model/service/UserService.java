@@ -1,19 +1,15 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTaskUtils;
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.AuthenticationHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetUserHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.LoginTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.LogoutTaskHandler;
-import edu.byu.cs.tweeter.client.backgroundTask.handler.RegisterTaskHandler;
-import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.presenter.RegisterPresenter;
+import edu.byu.cs.tweeter.client.model.service.observer.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -26,40 +22,24 @@ public class UserService {
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface LoginObserver {
+    public interface AuthenticationObserver extends ServiceObserver {
         void handleSuccess(User user, AuthToken authToken);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface RegisterObserver {
-        void handleSuccess(User user, AuthToken authToken);
-        void handleFailure(String message);
-        void handleException(Exception exception);
-    }
-
-    /**
-     * An observer interface to be implemented by observers who want to be notified when
-     * asynchronous operations complete.
-     */
-    public interface GetUserObserver {
+    public interface GetUserObserver extends ServiceObserver {
         void handleSuccess(User user);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface LogoutObserver {
+    public interface LogoutObserver extends ServiceObserver {
         void handleLogoutSuccess();
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
@@ -74,7 +54,7 @@ public class UserService {
      * @param username the user's name.
      * @param password the user's password.
      */
-    public void login(String username, String password, LoginObserver observer) {
+    public void login(String username, String password, AuthenticationObserver observer) {
         LoginTask loginTask = getLoginTask(username, password, observer);
         BackgroundTaskUtils.runTask(loginTask);
     }
@@ -86,7 +66,7 @@ public class UserService {
      *
      * @return the instance.
      */
-    LoginTask getLoginTask(String username, String password, LoginObserver observer) {
+    LoginTask getLoginTask(String username, String password, AuthenticationObserver observer) {
         return new LoginTask(username, password, new LoginTaskHandler(observer));
     }
 
@@ -98,7 +78,7 @@ public class UserService {
      * @param password the password for the user
      * @param image the user's profile picture
      */
-    public void register(String firstname, String lastname, String username, String password, String image, RegisterObserver observer) {
+    public void register(String firstname, String lastname, String username, String password, String image, AuthenticationObserver observer) {
         RegisterTask registerTask = getRegisterTask(firstname, lastname, username, password, image, observer);
         BackgroundTaskUtils.runTask(registerTask);
     }
@@ -110,8 +90,8 @@ public class UserService {
      *
      * @return the instance.
      */
-    RegisterTask getRegisterTask(String firstname, String lastname, String username, String password, String image, RegisterObserver observer) {
-        return new RegisterTask(firstname, lastname, username, password, image, new RegisterTaskHandler(observer));
+    RegisterTask getRegisterTask(String firstname, String lastname, String username, String password, String image, AuthenticationObserver observer) {
+        return new RegisterTask(firstname, lastname, username, password, image, new AuthenticationHandler(observer));
     }
 
     /**

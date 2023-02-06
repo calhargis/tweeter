@@ -246,5 +246,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
             followButton.setBackgroundColor(getResources().getColor(R.color.white));
             followButton.setTextColor(getResources().getColor(R.color.lightGray));
         }
+        followButton.setEnabled(true);
     }
 }

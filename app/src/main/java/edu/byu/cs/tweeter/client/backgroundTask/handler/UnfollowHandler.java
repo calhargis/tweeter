@@ -3,13 +3,11 @@ package edu.byu.cs.tweeter.client.backgroundTask.handler;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
-import edu.byu.cs.tweeter.client.view.main.MainActivity;
 
 /**
  * Handles messages from the background task indicating that the task is done, by invoking

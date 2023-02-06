@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+
 import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.UserService;
@@ -16,9 +17,9 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class RegisterTaskHandler extends Handler {
 
-    private final UserService.RegisterObserver observer;
+    private final UserService.AuthenticationObserver observer;
 
-    public RegisterTaskHandler(UserService.RegisterObserver observer) {
+    public RegisterTaskHandler(UserService.AuthenticationObserver observer) {
         super(Looper.getMainLooper());
         this.observer = observer;
     }

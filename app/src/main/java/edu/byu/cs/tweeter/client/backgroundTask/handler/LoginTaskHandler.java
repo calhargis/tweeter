@@ -5,9 +5,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -17,9 +17,9 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class LoginTaskHandler extends Handler {
 
-    private final UserService.LoginObserver observer;
+    private final UserService.AuthenticationObserver observer;
 
-    public LoginTaskHandler(UserService.LoginObserver observer) {
+    public LoginTaskHandler(UserService.AuthenticationObserver observer) {
         super(Looper.getMainLooper());
         this.observer = observer;
     }

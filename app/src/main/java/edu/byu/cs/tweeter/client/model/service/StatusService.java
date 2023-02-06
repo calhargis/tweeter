@@ -9,6 +9,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFeedTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetStoryTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.PostStatusHandler;
+import edu.byu.cs.tweeter.client.model.service.observer.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -19,30 +20,24 @@ public class StatusService {
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface GetFeedObserver {
+    public interface GetFeedObserver extends ServiceObserver {
         void handleSuccess(List<Status> statuses, boolean hasMorePages);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface GetStoryObserver {
+    public interface GetStoryObserver extends ServiceObserver {
         void handleSuccess(List<Status> statuses, boolean hasMorePages);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface PostStatusObserver {
+    public interface PostStatusObserver extends ServiceObserver {
         void handlePostStatusSuccess(boolean success);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**

@@ -5,7 +5,7 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterPresenter implements UserService.RegisterObserver{
+public class RegisterPresenter implements UserService.AuthenticationObserver {
 
     public void register(String firstName, String lastName, String alias, String password, String imageToUpload) {
         String validateError = validateRegistration(firstName, lastName, alias, password, imageToUpload);
@@ -73,7 +73,7 @@ public class RegisterPresenter implements UserService.RegisterObserver{
             return "Password cannot be empty.";
         }
 
-        if (imageToUpload == null) {
+        if (imageToUpload.length() == 0) {
             return "Profile image must be uploaded.";
         }
         return null;

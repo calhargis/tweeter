@@ -1,7 +1,6 @@
 package edu.byu.cs.tweeter.client.model.service;
 
 import java.util.List;
-import java.util.Observable;
 
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTaskUtils;
 import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
@@ -18,6 +17,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.IsFollowerHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.UnfollowHandler;
+import edu.byu.cs.tweeter.client.model.service.observer.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -30,61 +30,49 @@ public class FollowService {
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface GetFollowingObserver {
+    public interface GetFollowingObserver extends ServiceObserver {
         void handleSuccess(List<User> followees, boolean hasMorePages);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface GetFollowersObserver {
+    public interface GetFollowersObserver extends ServiceObserver {
         void handleSuccess(List<User> followers, boolean hasMorePages);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface GetFollowCountObserver {
+    public interface GetFollowCountObserver extends ServiceObserver {
         void handleFollowingCountSuccess(int count);
         void handleFollowerCountSuccess(int count);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface IsFollowerObserver {
+    public interface IsFollowerObserver extends ServiceObserver {
         void isFollowerSuccess(boolean isFollower);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface FollowObserver {
+    public interface FollowObserver extends ServiceObserver {
         void handleFollowSuccess(boolean isFollower);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface UnfollowObserver {
+    public interface UnfollowObserver extends ServiceObserver {
         void handleUnfollowSuccess(boolean success);
-        void handleFailure(String message);
-        void handleException(Exception exception);
     }
 
     /**
