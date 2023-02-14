@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.backgroundTask.handler;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -13,26 +14,14 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
  * Handles messages from the background task indicating that the task is done, by invoking
  * methods on the observer.
  */
-public class LogoutTaskHandler extends Handler {
-
-    UserService.LogoutObserver observer;
+public class LogoutTaskHandler extends BackgroundTaskHandler<UserService.LogoutObserver> {
 
     public LogoutTaskHandler(UserService.LogoutObserver observer) {
-        super(Looper.getMainLooper());
-        this.observer = observer;
+        super(observer);
     }
 
     @Override
-    public void handleMessage(@NonNull Message msg) {
-        boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);
-        if (success) {
-            observer.handleLogoutSuccess();
-        } else if (msg.getData().containsKey(LogoutTask.MESSAGE_KEY)) {
-            String message = msg.getData().getString(LogoutTask.MESSAGE_KEY);
-            observer.handleFailure(message);
-        } else if (msg.getData().containsKey(LogoutTask.EXCEPTION_KEY)) {
-            Exception ex = (Exception) msg.getData().getSerializable(LogoutTask.EXCEPTION_KEY);
-            observer.handleException(ex);
-        }
+    protected void handleSuccessMessage(UserService.LogoutObserver observer, Bundle data) {
+        observer.handleLogoutSuccess();
     }
 }

@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.backgroundTask.handler;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -13,27 +14,15 @@ import edu.byu.cs.tweeter.client.model.service.FollowService;
  * Handles messages from the background task indicating that the task is done, by invoking
  * methods on the observer.
  */
-public class GetFollowingCountHandler extends Handler {
-
-    FollowService.GetFollowCountObserver observer;
+public class GetFollowingCountHandler extends BackgroundTaskHandler<FollowService.GetFollowCountObserver> {
 
     public GetFollowingCountHandler(FollowService.GetFollowCountObserver observer) {
-        super(Looper.getMainLooper());
-        this.observer = observer;
+        super(observer);
     }
 
     @Override
-    public void handleMessage(@NonNull Message msg) {
-        boolean success = msg.getData().getBoolean(GetFollowingCountTask.SUCCESS_KEY);
-        if (success) {
-            int count = msg.getData().getInt(GetFollowingCountTask.COUNT_KEY);
-            observer.handleFollowingCountSuccess(count);
-        } else if (msg.getData().containsKey(GetFollowingCountTask.MESSAGE_KEY)) {
-            String message = msg.getData().getString(GetFollowingCountTask.MESSAGE_KEY);
-            observer.handleFailure(message);
-        } else if (msg.getData().containsKey(GetFollowingCountTask.EXCEPTION_KEY)) {
-            Exception ex = (Exception) msg.getData().getSerializable(GetFollowingCountTask.EXCEPTION_KEY);
-            observer.handleException(ex);
-        }
+    protected void handleSuccessMessage(FollowService.GetFollowCountObserver observer, Bundle data) {
+        int count = data.getInt(GetFollowingCountTask.COUNT_KEY);
+        observer.handleFollowingCountSuccess(count);
     }
 }

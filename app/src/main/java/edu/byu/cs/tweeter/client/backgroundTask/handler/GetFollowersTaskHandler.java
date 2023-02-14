@@ -15,29 +15,16 @@ import edu.byu.cs.tweeter.model.domain.User;
  * Handles messages from the background task indicating that the task is done, by invoking
  * methods on the observer.
  */
-public class GetFollowersTaskHandler extends Handler {
-
-    private final FollowService.GetFollowersObserver observer;
+public class GetFollowersTaskHandler extends BackgroundTaskHandler<FollowService.GetFollowersObserver> {
 
     public GetFollowersTaskHandler(FollowService.GetFollowersObserver observer) {
-        super(Looper.getMainLooper());
-        this.observer = observer;
+        super(observer);
     }
 
     @Override
-    public void handleMessage(Message message) {
-        Bundle bundle = message.getData();
-        boolean success = bundle.getBoolean(GetFollowersTask.SUCCESS_KEY);
-        if (success) {
-            List<User> followees = (List<User>) bundle.getSerializable(GetFollowersTask.FOLLOWERS_KEY);
-            boolean hasMorePages = bundle.getBoolean(GetFollowersTask.MORE_PAGES_KEY);
-            observer.handleSuccess(followees, hasMorePages);
-        } else if (bundle.containsKey(GetFollowersTask.MESSAGE_KEY)) {
-            String errorMessage = bundle.getString(GetFollowersTask.MESSAGE_KEY);
-            observer.handleFailure(errorMessage);
-        } else if (bundle.containsKey(GetFollowersTask.EXCEPTION_KEY)) {
-            Exception ex = (Exception) bundle.getSerializable(GetFollowersTask.EXCEPTION_KEY);
-            observer.handleException(ex);
-        }
+    protected void handleSuccessMessage(FollowService.GetFollowersObserver observer, Bundle data) {
+        List<User> followees = (List<User>) data.getSerializable(GetFollowersTask.FOLLOWERS_KEY);
+        boolean hasMorePages = data.getBoolean(GetFollowersTask.MORE_PAGES_KEY);
+        observer.handleSuccess(followees, hasMorePages);
     }
 }
