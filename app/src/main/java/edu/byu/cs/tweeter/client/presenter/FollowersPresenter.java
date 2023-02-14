@@ -12,7 +12,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * The presenter for the "following" functionality of the application.
  */
-public class FollowersPresenter implements FollowService.GetFollowersObserver, UserService.GetUserObserver {
+public class FollowersPresenter extends PagedPresenter {
 
     private static final String LOG_TAG = "FollowersPresenter";
     public static final int PAGE_SIZE = 10;
@@ -60,7 +60,7 @@ public class FollowersPresenter implements FollowService.GetFollowersObserver, U
         return hasMorePages;
     }
 
-    private void setHasMorePages(boolean hasMorePages) {
+    public void setHasMorePages(boolean hasMorePages) {
         this.hasMorePages = hasMorePages;
     }
 
@@ -68,7 +68,7 @@ public class FollowersPresenter implements FollowService.GetFollowersObserver, U
         return isLoading;
     }
 
-    private void setLoading(boolean loading) {
+    public void setLoading(boolean loading) {
         isLoading = loading;
     }
 
@@ -96,7 +96,7 @@ public class FollowersPresenter implements FollowService.GetFollowersObserver, U
      * @param lastFollower the last followee returned in the previous request (can be null).
      */
     public void getFollowers(AuthToken authToken, User targetUser, int limit, User lastFollower) {
-        getFollowersService().getFollowers(authToken, targetUser, limit, lastFollower, this);
+        getFollowersService().getFollowers(authToken, targetUser, limit, lastFollower, new FollowersObserver());
     }
 
     /**
@@ -111,62 +111,69 @@ public class FollowersPresenter implements FollowService.GetFollowersObserver, U
     }
 
     public void getUser(String username, AuthToken authToken) {
-        getUserService().getUser(username, authToken, this);
+        getUserService().getUser(username, authToken, new FollowersObserver());
     }
 
     public UserService getUserService() {
         return new UserService();
     }
 
-    /**
-     * Adds new followers retrieved asynchronously from the service to the view.
-     *
-     * @param followers    the retrieved followers.
-     * @param hasMorePages whether or not there are more followers to be retrieved.
-     */
-    @Override
-    public void handleSuccess(List<User> followers, boolean hasMorePages) {
-        setLastFollower((followers.size() > 0) ? followers.get(followers.size() - 1) : null);
-        setHasMorePages(hasMorePages);
 
-        view.setLoading(false);
-        view.addItems(followers);
-        setLoading(false);
+
+    private class FollowersObserver implements FollowService.GetFollowersObserver, UserService.GetUserObserver {
+
+        /**
+         * Adds new followers retrieved asynchronously from the service to the view.
+         *
+         * @param followers    the retrieved followers.
+         * @param hasMorePages whether or not there are more followers to be retrieved.
+         */
+        @Override
+        public void handleSuccess(List<User> followers, boolean hasMorePages) {
+            setLastFollower((followers.size() > 0) ? followers.get(followers.size() - 1) : null);
+            setHasMorePages(hasMorePages);
+
+            view.setLoading(false);
+            view.addItems(followers);
+            setLoading(false);
+        }
+
+        /**
+         * Notifies the presenter when asynchronous retrieval of followers failed.
+         *
+         * @param message error message.
+         */
+        @Override
+        public void handleFailure(String message) {
+            String errorMessage = "Failed to retrieve followers: " + message;
+            Log.e(LOG_TAG, errorMessage);
+
+            view.setLoading(false);
+            view.displayErrorMessage(errorMessage);
+            setLoading(false);
+        }
+
+        /**
+         * Notifies the presenter that an exception occurred in an asynchronous method this class is
+         * observing.
+         *
+         * @param exception the exception.
+         */
+        @Override
+        public void handleException(Exception exception) {
+            String errorMessage = "Failed to retrieve followers because of exception: " + exception.getMessage();
+            Log.e(LOG_TAG, errorMessage, exception);
+
+            view.setLoading(false);
+            view.displayErrorMessage(errorMessage);
+            setLoading(false);
+        }
+
+        @Override
+        public void handleSuccess(User user) {
+            view.navigateToUser(user);
+        }
+
     }
 
-    /**
-     * Notifies the presenter when asynchronous retrieval of followers failed.
-     *
-     * @param message error message.
-     */
-    @Override
-    public void handleFailure(String message) {
-        String errorMessage = "Failed to retrieve followers: " + message;
-        Log.e(LOG_TAG, errorMessage);
-
-        view.setLoading(false);
-        view.displayErrorMessage(errorMessage);
-        setLoading(false);
-    }
-
-    /**
-     * Notifies the presenter that an exception occurred in an asynchronous method this class is
-     * observing.
-     *
-     * @param exception the exception.
-     */
-    @Override
-    public void handleException(Exception exception) {
-        String errorMessage = "Failed to retrieve followers because of exception: " + exception.getMessage();
-        Log.e(LOG_TAG, errorMessage, exception);
-
-        view.setLoading(false);
-        view.displayErrorMessage(errorMessage);
-        setLoading(false);
-    }
-
-    @Override
-    public void handleSuccess(User user) {
-        view.navigateToUser(user);
-    }
 }

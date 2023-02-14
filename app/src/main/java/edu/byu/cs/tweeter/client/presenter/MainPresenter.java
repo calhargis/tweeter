@@ -14,8 +14,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements UserService.LogoutObserver, FollowService.GetFollowCountObserver,
-        FollowService.IsFollowerObserver, FollowService.FollowObserver, FollowService.UnfollowObserver, StatusService.PostStatusObserver {
+public class MainPresenter extends PagedPresenter {
 
     private static final String LOG_TAG = "MainPresenter";
 
@@ -55,89 +54,34 @@ public class MainPresenter implements UserService.LogoutObserver, FollowService.
 
     public void logout(AuthToken authToken) {
         view.displayInfoMessage("Logging Out...");
-        new UserService().logout(authToken, this);
+        new UserService().logout(authToken, new MainObserver());
     }
 
     public void getFollowersCount(AuthToken authToken, User targetUser) {
-        new FollowService().getFollowersCount(authToken, targetUser, this);
+        new FollowService().getFollowersCount(authToken, targetUser, new MainObserver());
     }
 
     public void getFollowingCount(AuthToken authToken, User user) {
-        new FollowService().getFollowingCount(authToken, user, this);
+        new FollowService().getFollowingCount(authToken, user, new MainObserver());
     }
 
     public void isFollower(AuthToken authToken, User follower, User followee) {
-        new FollowService().isFollower(authToken, follower, followee, this);
+        new FollowService().isFollower(authToken, follower, followee, new MainObserver());
     }
 
     public void follow(AuthToken authToken, User user) {
-        new FollowService().follow(authToken, user, this);
+        new FollowService().follow(authToken, user, new MainObserver());
     }
 
     public void unfollow(AuthToken authToken, User user) {
-        new FollowService().unfollow(authToken, user, this);
+        new FollowService().unfollow(authToken, user, new MainObserver());
     }
 
     public void postStatus(AuthToken authToken, Status status) {
-        new StatusService().postStatus(authToken, status, this);
+        new StatusService().postStatus(authToken, status, new MainObserver());
     }
 
-    @Override
-    public void handleLogoutSuccess() {
-        view.logoutUser();
-    }
 
-    /**
-     * Invoked when the login request completes if the login request was unsuccessful. Notifies the
-     * view of the unsuccessful login.
-     *
-     * @param message error message.
-     */
-    @Override
-    public void handleFailure(String message) {
-        view.displayInfoMessage("Failed: " + message);
-    }
-
-    /**
-     * A callback indicating that an exception occurred in an asynchronous method this class is
-     * observing.
-     *
-     * @param exception the exception.
-     */
-    @Override
-    public void handleException(Exception exception) {
-        view.displayErrorMessage("Failed because of exception: " + exception.getMessage());
-    }
-
-    @Override
-    public void handleFollowerCountSuccess(int count) {
-        view.updateFollowerCount(count);
-    }
-
-    @Override
-    public void handleFollowingCountSuccess(int count) {
-        view.updateFollowingCount(count);
-    }
-
-    @Override
-    public void isFollowerSuccess(boolean isFollower) {
-        view.updateIsFollower(isFollower);
-    }
-
-    @Override
-    public void handleFollowSuccess(boolean success) {
-        view.updateFollow(success);
-    }
-
-    @Override
-    public void handleUnfollowSuccess(boolean success) {
-        view.updateUnfollow(success);
-    }
-
-    @Override
-    public void handlePostStatusSuccess(boolean success) {
-        view.updatePostStatus(success);
-    }
 
     /* ---------------- HELPER FUNCTIONS FOR MAIN ACTIVITY ---------------- */
 
@@ -204,4 +148,65 @@ public class MainPresenter implements UserService.LogoutObserver, FollowService.
 
         return containedMentions;
     }
+
+    private class MainObserver implements UserService.LogoutObserver, FollowService.GetFollowCountObserver,
+    FollowService.IsFollowerObserver, FollowService.FollowObserver, FollowService.UnfollowObserver, StatusService.PostStatusObserver {
+        @Override
+        public void handleLogoutSuccess() {
+            view.logoutUser();
+        }
+
+        /**
+         * Invoked when the login request completes if the login request was unsuccessful. Notifies the
+         * view of the unsuccessful login.
+         *
+         * @param message error message.
+         */
+        @Override
+        public void handleFailure(String message) {
+            view.displayInfoMessage("Failed: " + message);
+        }
+
+        /**
+         * A callback indicating that an exception occurred in an asynchronous method this class is
+         * observing.
+         *
+         * @param exception the exception.
+         */
+        @Override
+        public void handleException(Exception exception) {
+            view.displayErrorMessage("Failed because of exception: " + exception.getMessage());
+        }
+
+        @Override
+        public void handleFollowerCountSuccess(int count) {
+            view.updateFollowerCount(count);
+        }
+
+        @Override
+        public void handleFollowingCountSuccess(int count) {
+            view.updateFollowingCount(count);
+        }
+
+        @Override
+        public void isFollowerSuccess(boolean isFollower) {
+            view.updateIsFollower(isFollower);
+        }
+
+        @Override
+        public void handleFollowSuccess(boolean success) {
+            view.updateFollow(success);
+        }
+
+        @Override
+        public void handleUnfollowSuccess(boolean success) {
+            view.updateUnfollow(success);
+        }
+
+        @Override
+        public void handlePostStatusSuccess(boolean success) {
+            view.updatePostStatus(success);
+        }
+    }
+
 }

@@ -17,6 +17,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersTaskHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.IsFollowerHandler;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.UnfollowHandler;
+import edu.byu.cs.tweeter.client.model.service.observer.FollowObserver;
 import edu.byu.cs.tweeter.client.model.service.observer.ServiceObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -30,16 +31,14 @@ public class FollowService {
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface GetFollowingObserver extends ServiceObserver {
-        void handleSuccess(List<User> followees, boolean hasMorePages);
+    public interface GetFollowingObserver extends edu.byu.cs.tweeter.client.model.service.observer.FollowObserver {
     }
 
     /**
      * An observer interface to be implemented by observers who want to be notified when
      * asynchronous operations complete.
      */
-    public interface GetFollowersObserver extends ServiceObserver {
-        void handleSuccess(List<User> followers, boolean hasMorePages);
+    public interface GetFollowersObserver extends edu.byu.cs.tweeter.client.model.service.observer.FollowObserver {
     }
 
     /**

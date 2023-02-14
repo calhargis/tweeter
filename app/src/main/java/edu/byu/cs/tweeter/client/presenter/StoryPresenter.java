@@ -11,7 +11,7 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 //import edu.byu.cs.tweeter.model.domain.User;
 
-public class StoryPresenter implements StatusService.GetStoryObserver, UserService.GetUserObserver{
+public class StoryPresenter extends PagedPresenter {
 
     private static final String LOG_TAG = "FeedPresenter";
     public static final int PAGE_SIZE = 10;
@@ -59,7 +59,7 @@ public class StoryPresenter implements StatusService.GetStoryObserver, UserServi
         return hasMorePages;
     }
 
-    private void setHasMorePages(boolean hasMorePages) {
+    public void setHasMorePages(boolean hasMorePages) {
         this.hasMorePages = hasMorePages;
     }
 
@@ -95,7 +95,7 @@ public class StoryPresenter implements StatusService.GetStoryObserver, UserServi
      * @param lastStatus the last status returned in the previous request (can be null).
      */
     public void getStory(AuthToken authToken, User targetUser, int limit, Status lastStatus) {
-        getStatusService().getStory(authToken, targetUser, limit, lastStatus, this);
+        getStatusService().getStory(authToken, targetUser, limit, lastStatus, new StoryObserver());
     }
 
     /**
@@ -110,63 +110,67 @@ public class StoryPresenter implements StatusService.GetStoryObserver, UserServi
     }
 
     public void getUser(String username, AuthToken authToken) {
-        getUserService().getUser(username, authToken, this);
+        getUserService().getUser(username, authToken, new StoryObserver());
     }
 
     public UserService getUserService() {
         return new UserService();
     }
 
-    /**
-     * Adds new followers retrieved asynchronously from the service to the view.
-     *
-     * @param statuses    the retrieved followers.
-     * @param hasMorePages whether or not there are more followers to be retrieved.
-     */
-    @Override
-    public void handleSuccess(List<Status> statuses, boolean hasMorePages) {
-        setLastStatus((statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null);
-        setHasMorePages(hasMorePages);
 
-        view.setLoading(false);
-        view.addItems(statuses);
-        setLoading(false);
-    }
 
-    /**
-     * Notifies the presenter when asynchronous retrieval of followers failed.
-     *
-     * @param message error message.
-     */
-    @Override
-    public void handleFailure(String message) {
-        String errorMessage = "Failed to retrieve feed: " + message;
-        Log.e(LOG_TAG, errorMessage);
+    private class StoryObserver implements StatusService.GetStoryObserver, UserService.GetUserObserver {
+        /**
+         * Adds new followers retrieved asynchronously from the service to the view.
+         *
+         * @param statuses    the retrieved followers.
+         * @param hasMorePages whether or not there are more followers to be retrieved.
+         */
+        @Override
+        public void handleSuccess(List<Status> statuses, boolean hasMorePages) {
+            setLastStatus((statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null);
+            setHasMorePages(hasMorePages);
 
-        view.setLoading(false);
-        view.displayErrorMessage(errorMessage);
-        setLoading(false);
-    }
+            view.setLoading(false);
+            view.addItems(statuses);
+            setLoading(false);
+        }
 
-    /**
-     * Notifies the presenter that an exception occurred in an asynchronous method this class is
-     * observing.
-     *
-     * @param exception the exception.
-     */
-    @Override
-    public void handleException(Exception exception) {
-        String errorMessage = "Failed to retrieve followers because of exception: " + exception.getMessage();
-        Log.e(LOG_TAG, errorMessage, exception);
+        /**
+         * Notifies the presenter when asynchronous retrieval of followers failed.
+         *
+         * @param message error message.
+         */
+        @Override
+        public void handleFailure(String message) {
+            String errorMessage = "Failed to retrieve feed: " + message;
+            Log.e(LOG_TAG, errorMessage);
 
-        view.setLoading(false);
-        view.displayErrorMessage(errorMessage);
-        setLoading(false);
-    }
+            view.setLoading(false);
+            view.displayErrorMessage(errorMessage);
+            setLoading(false);
+        }
 
-    @Override
-    public void handleSuccess(User user) {
-        view.navigateToUser(user);
+        /**
+         * Notifies the presenter that an exception occurred in an asynchronous method this class is
+         * observing.
+         *
+         * @param exception the exception.
+         */
+        @Override
+        public void handleException(Exception exception) {
+            String errorMessage = "Failed to retrieve followers because of exception: " + exception.getMessage();
+            Log.e(LOG_TAG, errorMessage, exception);
+
+            view.setLoading(false);
+            view.displayErrorMessage(errorMessage);
+            setLoading(false);
+        }
+
+        @Override
+        public void handleSuccess(User user) {
+            view.navigateToUser(user);
+        }
     }
 
 }

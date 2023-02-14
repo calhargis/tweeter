@@ -5,43 +5,17 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterPresenter implements UserService.AuthenticationObserver {
+public class RegisterPresenter extends PagedPresenter {
 
     public void register(String firstName, String lastName, String alias, String password, String imageToUpload) {
         String validateError = validateRegistration(firstName, lastName, alias, password, imageToUpload);
         if (validateError == null) {
             view.clearErrorMessages();
             view.displayInfoMessage("Registering User...");
-            new UserService().register(firstName, lastName, alias, password, imageToUpload, this);
+            new UserService().register(firstName, lastName, alias, password, imageToUpload, new RegisterObserver());
         } else {
             view.displayInfoMessage(validateError);
         }
-    }
-
-    @Override
-    public void handleSuccess(User user, AuthToken authToken) {
-        view.clearInfoMessages();
-        view.clearErrorMessages();
-        view.displayInfoMessage("Hello " + Cache.getInstance().getCurrUser().getName());
-        view.navigateToUser(user);
-    }
-
-    @Override
-    public void handleFailure(String message) {
-        view.displayInfoMessage("Failed to register: " + message);
-    }
-
-    @Override
-    public void handleException(Exception exception) {
-        view.displayErrorMessage("Failed to register because of exception: " + exception.getMessage());
-    }
-
-    public interface View {
-        void displayErrorMessage(String message);
-        void clearErrorMessages();
-        void displayInfoMessage(String message);
-        void clearInfoMessages();
-        void navigateToUser(User user);
     }
 
 
@@ -77,6 +51,26 @@ public class RegisterPresenter implements UserService.AuthenticationObserver {
             return "Profile image must be uploaded.";
         }
         return null;
+    }
+
+    private class RegisterObserver implements UserService.AuthenticationObserver {
+        @Override
+        public void handleSuccess(User user, AuthToken authToken) {
+            view.clearInfoMessages();
+            view.clearErrorMessages();
+            view.displayInfoMessage("Hello " + Cache.getInstance().getCurrUser().getName());
+            view.navigateToUser(user);
+        }
+
+        @Override
+        public void handleFailure(String message) {
+            view.displayInfoMessage("Failed to register: " + message);
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+            view.displayErrorMessage("Failed to register because of exception: " + exception.getMessage());
+        }
     }
 
 }
